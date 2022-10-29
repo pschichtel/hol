@@ -8,6 +8,11 @@
   "author": "Phillip Schichtel",
   "main": "index.js",
   "types": "index.d.ts",
+  "homepage": "https://github.com/pschichtel/hol",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pschichtel/hol"
+  },
   "scripts": {
     "build": "tsc"
   },

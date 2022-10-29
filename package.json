@@ -2,6 +2,7 @@
   "name": "@pschichtel/hol",
   "version": "0.0.1",
   "description": "A wrapper around fetch with infrastructure for request/response interception",
+  "type": "module",
   "keywords": ["fetch"],
   "license": "MIT",
   "author": "Phillip Schichtel",

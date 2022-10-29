@@ -4,8 +4,8 @@ import {
   HolMetadata,
   HolMetadataKey,
   HolResponse,
-} from './model'
-import { HolResult } from './result'
+} from './model.js'
+import { HolResult } from './result.js'
 
 export const RetryAttemptKey = new HolMetadataKey<number>("The attempt that got accepted")
 

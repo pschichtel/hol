@@ -94,7 +94,7 @@ export type HolInput = RequestInfo | URL
 
 export interface HolRequest {
   input: HolInput
-  init?: RequestInit,
+  init?: RequestInit
   metadata: HolMetadata
 }
 

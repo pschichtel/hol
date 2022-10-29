@@ -252,7 +252,7 @@ function fetchy(request: FetchyRequest): Promise<FetchyResponse> {
   })
 }
 
-export function adaptToFetch(fetchy: Fetchy): (input: FetchInput, init?: RequestInit) => Promise<Response> {
+export function fetchyToFetch(fetchy: Fetchy): (input: FetchInput, init?: RequestInit) => Promise<Response> {
   return (input, init) => {
     return fetchy({
       input: input,

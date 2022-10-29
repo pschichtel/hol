@@ -1,18 +1,16 @@
 {
   "name": "fetchy",
   "version": "0.0.1",
-  "description": "",
-  "keywords": "",
-  "license": "",
-  "author": "",
+  "description": "A wrapper around fetch with infrastructure for request/response interception",
+  "keywords": ["fetch"],
+  "license": "MIT",
+  "author": "Phillip Schichtel",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "parcel build index.html",
-    "dev": "parcel index.html --open",
-    "start": "npm run build && npm run dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.4",
     "typescript": "4.8.4"
   }
 }

@@ -1,3 +1,6 @@
 .idea/
 index.html
 .editorconfig
+*.ts
+!*.d.ts
+tsconfig.json

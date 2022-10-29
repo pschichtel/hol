@@ -1,13 +1,13 @@
 {
   "name": "@pschichtel/hol",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "description": "A wrapper around fetch with infrastructure for request/response interception",
   "type": "module",
   "keywords": ["fetch"],
   "license": "MIT",
   "author": "Phillip Schichtel",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "tsc"
   },

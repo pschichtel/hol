@@ -8,7 +8,7 @@ import {
   Hol,
 } from './model.js'
 
-export function compose(hol: Hol, filters: ReadonlyArray<HolFilter>): Hol {
+export function composeHol(hol: Hol, filters: ReadonlyArray<HolFilter>): Hol {
   if (filters.length == 0) {
     return hol
   }
@@ -39,7 +39,7 @@ export function hol(request: HolRequest): Promise<HolResponse> {
 }
 
 export function holToFetch(fetchy: Hol): (input: HolInput, init?: RequestInit) => Promise<Response> {
-  return (input, init) => {
+  return function HolAsFetch(input, init) {
     return fetchy({
       input: input,
       init: init,

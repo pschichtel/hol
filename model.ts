@@ -1,5 +1,5 @@
 export class HolMetadata {
-  private readonly metadata = new Map<Symbol, any>()
+  private readonly metadata = new Map<symbol, any>()
 
   get<T>(key: HolMetadataKey<T>): T | undefined {
     return this.metadata.get(key.symbol) as T | undefined
@@ -29,13 +29,13 @@ export class HolMetadata {
     return out
   }
 
-  entries(): IterableIterator<[Symbol, any]> {
+  entries(): IterableIterator<[symbol, any]> {
     return this.metadata.entries()
   }
 }
 
 export class HolMetadataKey<T> {
-  readonly symbol: Symbol
+  readonly symbol: symbol
 
   constructor(description: string) {
     this.symbol = Symbol(description)

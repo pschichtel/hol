@@ -4,8 +4,6 @@ import {
   HolRequest,
 } from './model.js'
 
-const dummyHost = 'example.org'
-
 export interface UrlBuilder {
   from(url: URL | string): void
 
@@ -23,10 +21,21 @@ export interface UrlBuilder {
 }
 
 class SimpleUrlBuilder implements UrlBuilder {
-  private url: URL = new URL(`https://${dummyHost}`)
+  private url: URL
+  private hasHost: boolean = false
+
+  constructor(baseUrl?: URL | string) {
+    if (baseUrl) {
+      this.url = new URL(baseUrl)
+      this.hasHost = true
+    } else {
+      this.url = new URL('https://localhost')
+    }
+  }
 
   from(url: URL | string) {
     this.url = new URL(url)
+    this.hasHost = true
   }
 
   protocol(protocol: string) {
@@ -39,6 +48,7 @@ class SimpleUrlBuilder implements UrlBuilder {
 
   host(host: string) {
     this.url.host = host
+    this.hasHost = true
   }
 
   port(port: number | undefined) {
@@ -66,14 +76,18 @@ class SimpleUrlBuilder implements UrlBuilder {
   }
 
   build(): URL {
+    if (!this.hasHost) {
+      throw new Error("No host has been configured!")
+    }
     return this.url
   }
 }
 
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD'
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD' | 'QUERY'
 
 export interface RequestBuilder {
   buildUrl(build: (builder: UrlBuilder) => void): void
+  buildUrlFrom(from: URL | string, build: (builder: UrlBuilder) => void): void
 
   method(method: HttpMethod): void
 
@@ -86,9 +100,9 @@ export interface RequestBuilder {
   requestInit(init: RequestInit): void
 }
 
-class SimpleRequestBuilder implements RequestBuilder {
+export class SimpleRequestBuilder implements RequestBuilder {
 
-  private readonly urlBuilder = new SimpleUrlBuilder()
+  private urlBuilder: SimpleUrlBuilder | undefined = undefined
   private methodValue: HttpMethod | undefined = undefined
   private init: RequestInit | undefined = undefined
   private headers = new Headers()
@@ -96,6 +110,12 @@ class SimpleRequestBuilder implements RequestBuilder {
   private bodyValue: BodyInit | null = null
 
   buildUrl(build: (builder: UrlBuilder) => void) {
+    this.urlBuilder = new SimpleUrlBuilder()
+    build(this.urlBuilder)
+  }
+
+  buildUrlFrom(from: URL | string, build: (builder: UrlBuilder) => void) {
+    this.urlBuilder = new SimpleUrlBuilder(from)
     build(this.urlBuilder)
   }
 
@@ -120,6 +140,9 @@ class SimpleRequestBuilder implements RequestBuilder {
   }
 
   build(): HolRequest {
+    if (!this.urlBuilder) {
+      throw new Error("No URL has been configured!")
+    }
     return {
       input: this.urlBuilder.build(),
       init: {

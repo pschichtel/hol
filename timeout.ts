@@ -54,11 +54,11 @@ export function timeout(millis: number): HolFilter {
           clearTimeout(timer)
         }
         const metadata = request.metadata.clone()
-        const fetchyError = new HolError(error, metadata)
+        const holError = new HolError(error, metadata)
         if (error == timeoutAbortReason || error?.code && error.code === 'ERR_CANCELLED') {
           metadata.put(TimeoutHappenedKey, signal.aborted && signal.reason === timeoutAbortReason)
         }
-        throw fetchyError
+        throw holError
       },
     )
   }

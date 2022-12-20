@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "description": "A wrapper around fetch with infrastructure for request/response interception",
   "type": "module",
-  "keywords": ["fetch"],
+  "keywords": [
+    "fetch"
+  ],
   "license": "MIT",
   "author": "Phillip Schichtel",
   "main": "index.js",

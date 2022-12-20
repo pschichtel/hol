@@ -3,6 +3,7 @@ import {
   HolMetadataKey,
   HolRequest,
 } from './model.js'
+import { BodyEncoder } from './codec'
 
 export interface UrlBuilder {
   from(url: URL | string): void
@@ -83,19 +84,18 @@ class SimpleUrlBuilder implements UrlBuilder {
   }
 }
 
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD' | 'QUERY'
-
 export interface RequestBuilder {
   buildUrl(build: (builder: UrlBuilder) => void): void
   buildUrlFrom(from: URL | string, build: (builder: UrlBuilder) => void): void
 
-  method(method: HttpMethod): void
+  method(method: string): void
 
   addHeader(name: string, value: string): void
 
   addMetadata<T>(key: HolMetadataKey<T>, value: T): void
 
-  body(body: BodyInit): void
+  body(encoder: BodyEncoder): void
+  rawBody(body: BodyInit): void
 
   requestInit(init: RequestInit): void
 }
@@ -103,7 +103,7 @@ export interface RequestBuilder {
 export class SimpleRequestBuilder implements RequestBuilder {
 
   private urlBuilder: SimpleUrlBuilder | undefined = undefined
-  private methodValue: HttpMethod | undefined = undefined
+  private methodValue: string | undefined = undefined
   private init: RequestInit | undefined = undefined
   private headers = new Headers()
   private metadata = new HolMetadata()
@@ -114,12 +114,14 @@ export class SimpleRequestBuilder implements RequestBuilder {
     build(this.urlBuilder)
   }
 
-  buildUrlFrom(from: URL | string, build: (builder: UrlBuilder) => void) {
+  buildUrlFrom(from: URL | string, build?: (builder: UrlBuilder) => void) {
     this.urlBuilder = new SimpleUrlBuilder(from)
-    build(this.urlBuilder)
+    if (build) {
+      build(this.urlBuilder)
+    }
   }
 
-  method(method: HttpMethod) {
+  method(method: string) {
     this.methodValue = method
   }
 
@@ -131,7 +133,11 @@ export class SimpleRequestBuilder implements RequestBuilder {
     this.metadata.put(key, value)
   }
 
-  body(body: BodyInit) {
+  body(body: BodyEncoder) {
+    body(this)
+  }
+
+  rawBody(body: BodyInit) {
     this.bodyValue = body
   }
 

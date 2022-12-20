@@ -12,6 +12,7 @@ import {
   composeHol,
   holToFetch,
 } from '../index.js'
+import { BodyEncoder } from '../codec'
 
 export class Client {
   private readonly rawHol: Hol
@@ -69,44 +70,33 @@ export class Client {
     return this.simpleExecuteWithoutBody('HEAD', target, queryParams)
   }
 
-  private simpleExecuteWithBody(method: 'POST' | 'PUT' | 'PATCH' | 'QUERY', target: URL | string, body?: BodyInit | null, contentType?: string) {
+  private simpleExecuteWithBody(method: 'POST' | 'PUT' | 'PATCH' | 'QUERY', target: URL | string, body?: BodyEncoder) {
     const request = this.buildRequest(req => {
       req.buildUrl(url => {
         url.from(target)
       })
       req.method(method)
       if (body) {
-        req.body(body)
-        if (contentType) {
-          req.addHeader('Content-Type', contentType)
-        } else {
-          if (body instanceof FormData) {
-            req.addHeader('Content-Type', 'multipart/form-data')
-          } else if (body instanceof URLSearchParams) {
-            req.addHeader('Content-Type', 'application/x-www-form-urlencoded')
-          } else {
-            req.addHeader('Content-Type', 'application/octet-stream')
-          }
-        }
+        body(req)
       }
     })
     return this.execute(request)
   }
 
-  post(target: URL | string, body?: BodyInit | null, contentType?: string): Promise<HolResponse> {
-    return this.simpleExecuteWithBody('POST', target, body, contentType)
+  post(target: URL | string, body?: BodyEncoder): Promise<HolResponse> {
+    return this.simpleExecuteWithBody('POST', target, body)
   }
 
-  put(target: URL | string, body?: BodyInit | null, contentType?: string): Promise<HolResponse> {
-    return this.simpleExecuteWithBody('PUT', target, body, contentType)
+  put(target: URL | string, body?: BodyEncoder): Promise<HolResponse> {
+    return this.simpleExecuteWithBody('PUT', target, body)
   }
 
-  patch(target: URL | string, body?: BodyInit | null, contentType?: string): Promise<HolResponse> {
-    return this.simpleExecuteWithBody('PATCH', target, body, contentType)
+  patch(target: URL | string, body?: BodyEncoder): Promise<HolResponse> {
+    return this.simpleExecuteWithBody('PATCH', target, body)
   }
 
-  query(target: URL | string, body?: BodyInit | null, contentType?: string): Promise<HolResponse> {
-    return this.simpleExecuteWithBody('QUERY', target, body, contentType)
+  query(target: URL | string, body?: BodyEncoder): Promise<HolResponse> {
+    return this.simpleExecuteWithBody('QUERY', target, body)
   }
 
   asHol(): Hol {

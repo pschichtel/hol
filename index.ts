@@ -7,6 +7,7 @@ import {
   HolFilter,
   Hol,
 } from './model.js'
+import { BodyDecoder } from './codec'
 
 export function composeHol(hol: Hol, filters: ReadonlyArray<HolFilter>): Hol {
   if (filters.length == 0) {
@@ -33,6 +34,18 @@ export function hol(request: HolRequest): Promise<HolResponse> {
   return fetch(request.input, request.init).then(response => ({
     response: response,
     metadata: request.metadata,
+    get successful(): boolean {
+      return response.status >= 200 && response.status < 300
+    },
+    get clientError(): boolean {
+      return response.status >= 400 && response.status < 500
+    },
+    get serverError(): boolean {
+      return response.status >= 500 && response.status < 600
+    },
+    body<T>(decoder: BodyDecoder<T>): Promise<T> {
+      return decoder(response, request.metadata)
+    }
   }), error => {
     throw new HolError(error, request.metadata.clone())
   })

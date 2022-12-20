@@ -1,3 +1,5 @@
+import { BodyDecoder } from './codec'
+
 export class HolMetadata {
   private readonly metadata = new Map<symbol, any>()
 
@@ -49,6 +51,10 @@ export class HolMetadataKey<T> {
 export interface HolResponse {
   response: Response
   metadata: HolMetadata
+  get successful(): boolean
+  get clientError(): boolean
+  get serverError(): boolean
+  body<T>(decoder: BodyDecoder<T>): Promise<T>
 }
 
 export class HolError implements Error {

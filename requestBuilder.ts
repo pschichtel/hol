@@ -86,7 +86,7 @@ class SimpleUrlBuilder implements UrlBuilder {
 
 export interface RequestBuilder {
   buildUrl(build: (builder: UrlBuilder) => void): void
-  buildUrlFrom(from: URL | string, build: (builder: UrlBuilder) => void): void
+  buildUrlFrom(from: URL | string, build?: (builder: UrlBuilder) => void): void
 
   method(method: string): void
 

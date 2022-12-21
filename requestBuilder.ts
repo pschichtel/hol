@@ -108,6 +108,7 @@ export class SimpleRequestBuilder implements RequestBuilder {
   private headers = new Headers()
   private metadata = new HolMetadata()
   private bodyValue: BodyInit | null = null
+  private abortSignal: AbortSignal | undefined = undefined
 
   buildUrl(build: (builder: UrlBuilder) => void) {
     this.urlBuilder = new SimpleUrlBuilder()
@@ -145,6 +146,10 @@ export class SimpleRequestBuilder implements RequestBuilder {
     this.init = init
   }
 
+  abortOn(signal: AbortSignal) {
+    this.abortSignal = signal;
+  }
+
   build(): HolRequest {
     if (!this.urlBuilder) {
       throw new Error("No URL has been configured!")
@@ -155,6 +160,7 @@ export class SimpleRequestBuilder implements RequestBuilder {
         ...this.init,
         method: this.methodValue,
         headers: this.headers,
+        signal: this.abortSignal,
         body: this.bodyValue,
       },
       metadata: this.metadata,

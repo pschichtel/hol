@@ -1,4 +1,5 @@
 import {
+  Hol,
   HolFilter,
   HolRequest,
   HolResponse,
@@ -13,20 +14,20 @@ export function composeFilters(filters: ReadonlyArray<HolFilter>): HolFilter {
     return filters[0]
   }
 
-  function compose(currentFilter: HolFilter, i: number): HolFilter {
-    if (i < 0) {
-      return currentFilter
-    }
+  const filtersCopy = [...filters]
 
-    const next = filters[i]
-    const newFilter: HolFilter = function ComposedFilter(request, execute) {
-      return currentFilter(request, (filteredRequest) => next(filteredRequest, execute))
+  function applyFilter(request: HolRequest, execute: Hol, i: number): Promise<HolResponse> {
+    if (i >= filtersCopy.length) {
+      return execute(request)
     }
-
-    return compose(newFilter, i - 1)
+    return filtersCopy[i](request, (filteredRequest) => {
+      return applyFilter(filteredRequest, execute, i + 1)
+    })
   }
 
-  return compose(filters[0], 1)
+  return function ComposedFilters(request, execute) {
+    return applyFilter(request, execute, 1)
+  }
 }
 
 export class AbstractFilterChain<T> {

@@ -13,6 +13,10 @@ export class HolMetadata {
     return old
   }
 
+  compute<T>(key: HolMetadataKey<T>, compute: (value: T | undefined) => T) {
+    this.put(key, compute(this.get(key)))
+  }
+
   putAll(other: HolMetadata) {
     for (let [symbol, value] of other.metadata.entries()) {
       this.metadata.set(symbol, value)

@@ -18,15 +18,15 @@ export function composeFilters(filters: ReadonlyArray<HolFilter>): HolFilter {
       return currentFilter
     }
 
-    const filter = filters[i]
+    const next = filters[i]
     const newFilter: HolFilter = function ComposedFilter(request, execute) {
-      return filter(request, (filteredRequest) => currentFilter(filteredRequest, execute))
+      return currentFilter(request, (filteredRequest) => next(filteredRequest, execute))
     }
 
     return compose(newFilter, i - 1)
   }
 
-  return compose(filters[filters.length - 1], filters.length - 2)
+  return compose(filters[0], 1)
 }
 
 export class AbstractFilterChain<T> {

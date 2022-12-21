@@ -97,6 +97,8 @@ export interface RequestBuilder {
   body(encoder: BodyEncoder): void
   rawBody(body: BodyInit): void
 
+  abortOn(signal: AbortSignal): void
+
   requestInit(init: RequestInit): void
 }
 

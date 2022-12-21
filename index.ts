@@ -8,26 +8,11 @@ import {
   Hol,
 } from './model.js'
 import { BodyDecoder } from './codec'
+import { composeFilters } from './filter_chain'
 
 export function composeHol(hol: Hol, filters: ReadonlyArray<HolFilter>): Hol {
-  if (filters.length == 0) {
-    return hol
-  }
-
-  function composeFetch(currentFetch: Hol, i: number): Hol {
-    if (i < 0) {
-      return currentFetch
-    }
-
-    const filter = filters[i]
-    const newFetch = function FilteredFetch(request: HolRequest) {
-      return filter(request, currentFetch)
-    }
-
-    return composeFetch(newFetch, i - 1)
-  }
-
-  return composeFetch(hol, filters.length - 1)
+  const filter = composeFilters(filters)
+  return (req) => filter(req, hol)
 }
 
 export function hol(request: HolRequest): Promise<HolResponse> {

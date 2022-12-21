@@ -16,8 +16,7 @@
     "url": "https://github.com/pschichtel/hol"
   },
   "scripts": {
-    "build": "tsc",
-    "publish": "npm publish --access public"
+    "build": "tsc"
   },
   "devDependencies": {
     "typescript": "4.8.4"

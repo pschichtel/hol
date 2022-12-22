@@ -7,7 +7,8 @@ import { BodyEncoder } from './codec.js'
 
 export type QueryParamPrimitiveValue = string | number | boolean | undefined | null
 export type QueryParamValue = QueryParamPrimitiveValue | Array<QueryParamPrimitiveValue>
-export type QueryParams = URLSearchParams | Array<[string, QueryParamPrimitiveValue]> | { [name: string]: QueryParamValue }
+export type QueryParam = [string, QueryParamPrimitiveValue]
+export type QueryParams = URLSearchParams | Array<QueryParam> | ReadonlyArray<QueryParam> | { [name: string]: QueryParamValue }
 
 export interface UrlBuilder {
   from(url: URL | string): void

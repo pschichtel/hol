@@ -1,4 +1,5 @@
 import {
+  buildRequest,
   RequestBuilder,
   SimpleRequestBuilder,
 } from '../requestBuilder.js'
@@ -33,8 +34,15 @@ export class Client {
     return builder.build()
   }
 
-  execute(request: HolRequest): Promise<HolResponse> {
+  execute(request: HolRequest, adhocFilters?: Array<HolFilter>): Promise<HolResponse> {
+    if (adhocFilters && adhocFilters.length > 0) {
+      return composeHol(this.composedHol, adhocFilters)(request)
+    }
     return this.composedHol(request)
+  }
+
+  buildAndExecuteRequest(build: (builder: RequestBuilder) => void, adhocFilters?: Array<HolFilter>): Promise<HolResponse> {
+    return this.execute(buildRequest(build), adhocFilters)
   }
 
   private simpleExecuteWithoutBody(method: 'GET' | 'DELETE' | 'OPTIONS' | 'HEAD',

@@ -82,18 +82,6 @@ export class DataHoler {
       throw promise
     }
 
-    this.forget(key, "superseded")
-    this.keyMapping[key] = fullKey
-    const abortController = new AbortController()
-    const promise = f(input, abortController.signal).then((value) => {
-      delete this.pendingPromises[fullKey]
-      this.values[fullKey] = value
-    }, (error) => {
-      delete this.pendingPromises[fullKey]
-      this.errors[fullKey] = error
-    })
-    this.pendingPromises[fullKey] = [promise, abortController]
-
     throw this.holIt(key, fullKey, input, f)
   }
 

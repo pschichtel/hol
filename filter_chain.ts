@@ -26,7 +26,7 @@ export function composeFilters(filters: ReadonlyArray<HolFilter>): HolFilter {
   }
 
   return function ComposedFilters(request, execute) {
-    return applyFilter(request, execute, 1)
+    return applyFilter(request, execute, 0)
   }
 }
 

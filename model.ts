@@ -55,9 +55,11 @@ export class HolMetadataKey<T> {
 export interface HolResponse {
   response: Response
   metadata: HolMetadata
+  get statusCode(): number
   get successful(): boolean
   get clientError(): boolean
   get serverError(): boolean
+  get headers(): Headers
   body<T>(decoder: BodyDecoder<T>): Promise<T>
 }
 

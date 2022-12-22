@@ -19,6 +19,9 @@ export function hol(request: HolRequest): Promise<HolResponse> {
   return fetch(request.input, request.init).then(response => ({
     response: response,
     metadata: request.metadata,
+    get statusCode(): number {
+      return response.status
+    },
     get successful(): boolean {
       return response.status >= 200 && response.status < 300
     },
@@ -27,6 +30,9 @@ export function hol(request: HolRequest): Promise<HolResponse> {
     },
     get serverError(): boolean {
       return response.status >= 500 && response.status < 600
+    },
+    get headers(): Headers {
+      return response.headers
     },
     body<T>(decoder: BodyDecoder<T>): Promise<T> {
       return decoder(response, request.metadata)

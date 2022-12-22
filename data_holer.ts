@@ -1,7 +1,7 @@
 /**
  * A data fetcher for use with React-style frameworks.
  */
-class DataHoler {
+export class DataHoler {
   private readonly keyMapping: { [key: string]: string } = {}
   private readonly values: { [key: string]: any } = {}
   private readonly errors: { [key: string]: any } = {}

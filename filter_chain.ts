@@ -66,7 +66,7 @@ export class AbstractFilterChain<T> {
   }
 }
 
-class FilterChain extends AbstractFilterChain<HolFilter> {
+export class FilterChain extends AbstractFilterChain<HolFilter> {
   constructor() {
     super(composeFilters)
   }
@@ -88,7 +88,7 @@ function composeRequestFilters(filters: Array<HolRequestFilter>): HolFilter {
   }
 }
 
-class RequestFilterChain extends AbstractFilterChain<HolRequestFilter> {
+export class RequestFilterChain extends AbstractFilterChain<HolRequestFilter> {
   constructor() {
     super(composeRequestFilters)
   }
@@ -111,7 +111,7 @@ function composeResponseFilters(filters: Array<HolResponseFilter>): HolFilter {
   }
 }
 
-class ResponseFilterChain extends AbstractFilterChain<HolResponseFilter> {
+export class ResponseFilterChain extends AbstractFilterChain<HolResponseFilter> {
   constructor() {
     super(composeResponseFilters)
   }

@@ -16,10 +16,14 @@ export function asIs(body: any, contentType?: string): BodyEncoder {
   if (contentType) {
     detectedContentType = contentType
   } else {
-    if (body instanceof FormData) {
+    if (typeof body === 'string') {
+      detectedContentType = 'text/plain'
+    } else if (body instanceof FormData) {
       detectedContentType = 'multipart/form-data'
     } else if (body instanceof URLSearchParams) {
       detectedContentType = 'application/x-www-form-urlencoded'
+    } else if (body instanceof Blob) {
+      detectedContentType = body.type
     } else {
       detectedContentType = 'application/octet-stream'
     }

@@ -1,5 +1,5 @@
-import { RequestBuilder } from './requestBuilder'
-import { HolMetadata } from './model'
+import { RequestBuilder } from './requestBuilder.js'
+import { HolMetadata } from './model.js'
 
 export type BodyEncoder = (requestBuilder: RequestBuilder) => void
 export type BodyDecoder<T> = (response: Response, metadata: HolMetadata) => Promise<T>

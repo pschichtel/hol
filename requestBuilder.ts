@@ -3,7 +3,7 @@ import {
   HolMetadataKey,
   HolRequest,
 } from './model.js'
-import { BodyEncoder } from './codec'
+import { BodyEncoder } from './codec.js'
 
 export interface UrlBuilder {
   from(url: URL | string): void

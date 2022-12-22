@@ -5,6 +5,10 @@ import {
 } from './model.js'
 import { BodyEncoder } from './codec.js'
 
+export type QueryParamPrimitiveValue = string | number | boolean | undefined | null
+export type QueryParamValue = QueryParamPrimitiveValue | Array<QueryParamPrimitiveValue>
+export type QueryParams = URLSearchParams | { [name: string]: QueryParamValue }
+
 export interface UrlBuilder {
   from(url: URL | string): void
 
@@ -17,6 +21,7 @@ export interface UrlBuilder {
   path(path: string): void
 
   addQueryParam(name: string, value: string): void
+  addQueryParams(params: QueryParams): void
 
   fragment(fragment: string | undefined): void
 }
@@ -66,6 +71,28 @@ class SimpleUrlBuilder implements UrlBuilder {
 
   addQueryParam(name: string, value: string) {
     this.url.searchParams.append(name, value)
+  }
+
+  addQueryParams(params: QueryParams): void {
+    if (params instanceof URLSearchParams) {
+      for (let [name, value] of params.entries()) {
+        this.addQueryParam(name, value)
+      }
+    } else {
+      for (let [name, value] of Object.entries(params)) {
+        if (value === null || value === undefined) {
+          continue
+        }
+        if (Array.isArray(value)) {
+          for (let entry of value) {
+            if (entry === null || entry === undefined) {
+              continue
+            }
+            this.addQueryParam(name, `${entry}`)
+          }
+        }
+      }
+    }
   }
 
   fragment(fragment: string | undefined) {

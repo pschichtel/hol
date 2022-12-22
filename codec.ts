@@ -30,6 +30,22 @@ export function asIs(body: any, contentType?: string): BodyEncoder {
   }
 }
 
-export function fromJson<T>(): BodyDecoder<T> {
-  return async (response) => JSON.parse(await response.text()) as T
+export async function fromJson<T>(response: Response): Promise<T> {
+  return JSON.parse(await response.text()) as T
+}
+
+export function toBlob(response: Response): Promise<Blob> {
+  return response.blob()
+}
+
+export function toArrayBuffer(response: Response): Promise<ArrayBuffer> {
+  return response.arrayBuffer()
+}
+
+export function toText(response: Response): Promise<string> {
+  return response.text()
+}
+
+export function toFormData(response: Response): Promise<FormData> {
+  return response.formData()
 }

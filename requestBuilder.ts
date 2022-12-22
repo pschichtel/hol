@@ -95,6 +95,8 @@ class SimpleUrlBuilder implements UrlBuilder {
             }
             this.addQueryParam(name, `${entry}`)
           }
+        } else {
+          this.addQueryParam(name, `${value}`);
         }
       }
     }

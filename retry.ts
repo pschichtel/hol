@@ -12,9 +12,10 @@ export const RetryAttemptKey = new HolMetadataKey<number>("The attempt that got 
 export function retry(predicate: (result: HolResult, attempt: number) => Promise<boolean>): HolFilter {
   return async function RetryFilter(request, execute): Promise<HolResponse> {
     let attempt = 1
+    const originalRequest = request.clone(false)
     while (true) {
       try {
-        const response = await execute(request)
+        const response = await execute(originalRequest)
         const retryResult = await predicate({ type: 'response', response: response }, attempt)
         if (retryResult) {
           response.metadata.put(RetryAttemptKey, attempt)

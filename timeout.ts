@@ -19,7 +19,7 @@ export function timeout(millis: number): HolFilter {
     const parentAbortReason = 'parent'
     const timeoutAbortReason = 'timeout'
 
-    const existingSignal = request.init?.signal
+    const existingSignal = request.init.signal
     if (existingSignal) {
       if (existingSignal.aborted) {
         abort.abort(parentAbortReason)
@@ -27,14 +27,7 @@ export function timeout(millis: number): HolFilter {
         existingSignal.addEventListener('abort', () => abort.abort(parentAbortReason))
       }
     }
-
-    const augmentedRequest = {
-      ...request,
-      init: {
-        ...request.init,
-        signal: signal,
-      },
-    }
+    request.init.signal = abort.signal
 
     let timer: number | undefined = undefined
     timer = setTimeout(() => {
@@ -42,7 +35,7 @@ export function timeout(millis: number): HolFilter {
       timer = undefined
     }, millis)
 
-    return execute(augmentedRequest).then(
+    return execute(request).then(
       (response) => {
         if (timer) {
           clearTimeout(timer)

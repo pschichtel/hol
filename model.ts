@@ -104,10 +104,38 @@ export class HolError implements Error {
 
 export type HolInput = RequestInfo | URL
 
-export interface HolRequest {
+export class HolRequest {
   input: HolInput
-  init?: RequestInit
-  metadata: HolMetadata
+  init: RequestInit
+  readonly metadata: HolMetadata
+
+  constructor(input: HolInput, init?: RequestInit, metadata?: HolMetadata) {
+    this.input = input
+    this.init = init ?? {}
+    this.metadata = metadata ?? new HolMetadata()
+  }
+
+  get headers() {
+    let headers = this.init.headers
+    if (!headers) {
+      headers = new Headers()
+      this.init.headers = headers;
+    } else if (!(headers instanceof Headers)) {
+      headers = new Headers(this.init.headers)
+      this.init.headers = headers
+    }
+    return headers;
+  }
+
+  clone(cloneMetadata: boolean) {
+    return {
+      ...this,
+      init: {
+        ...this.init,
+      },
+      metadata: cloneMetadata ? this.metadata.clone() : this.metadata,
+    }
+  }
 }
 
 export type Hol = (request: HolRequest) => Promise<HolResponse>

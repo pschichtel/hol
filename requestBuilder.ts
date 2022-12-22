@@ -136,6 +136,30 @@ export interface RequestBuilder {
   requestInit(init: RequestInit): void
 }
 
+function mergeHeaders(init: HeadersInit | undefined, additionalHeaders: Headers): Headers {
+  const headers = new Headers(init)
+  for (let [name, value] of additionalHeaders) {
+    headers.append(name, value);
+  }
+
+  return headers
+}
+
+function linkAbortSignals(a: AbortSignal | undefined | null, b: AbortSignal | undefined | null): AbortSignal | null {
+  if (a && b) {
+    const combined = new AbortController()
+    a.addEventListener('abort', () => combined.abort(a.reason))
+    b.addEventListener('abort', () => combined.abort(b.reason))
+    return combined.signal
+  } else if (a) {
+    return a
+  } else if (b) {
+    return b
+  } else {
+    return null
+  }
+}
+
 export class SimpleRequestBuilder implements RequestBuilder {
 
   private urlBuilder: SimpleUrlBuilder | undefined = undefined
@@ -190,17 +214,14 @@ export class SimpleRequestBuilder implements RequestBuilder {
     if (!this.urlBuilder) {
       throw new Error("No URL has been configured!")
     }
-    return {
-      input: this.urlBuilder.build(),
-      init: {
-        ...this.init,
-        method: this.methodValue,
-        headers: this.headers,
-        signal: this.abortSignal,
-        body: this.bodyValue,
-      },
-      metadata: this.metadata,
+    let mergedInit = {
+      ...this.init,
+      method: this.methodValue,
+      headers: mergeHeaders(this.init?.headers, this.headers),
+      signal: linkAbortSignals(this.init?.signal, this.abortSignal),
+      body: this.bodyValue,
     }
+    return new HolRequest(this.urlBuilder.build(), mergedInit, this.metadata)
   }
 }
 

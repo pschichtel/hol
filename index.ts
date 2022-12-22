@@ -44,10 +44,6 @@ export function hol(request: HolRequest): Promise<HolResponse> {
 
 export function holToFetch(hol: Hol): (input: HolInput, init?: RequestInit) => Promise<Response> {
   return function HolAsFetch(input, init) {
-    return hol({
-      input: input,
-      init: init,
-      metadata: new HolMetadata(),
-    }).then(response => response.response)
+    return hol(new HolRequest(input, init, new HolMetadata())).then(response => response.response)
   }
 }

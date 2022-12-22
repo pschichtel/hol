@@ -14,24 +14,11 @@ export const AuthenticatedKey = new HolMetadataKey<boolean>("whether the request
 export function auth(authProvider: AuthProvider): HolFilter {
   return async function AuthFilter(request, execute): Promise<HolResponse> {
     const authorization = await authProvider(request)
-    let authenticatedRequest: HolRequest
     if (authorization) {
       const [type, value] = authorization
-      authenticatedRequest = {
-        ...request,
-        init: {
-          ...request.init,
-          headers: {
-            ...request.init?.headers,
-            Authorization: `${type} ${value}`,
-          }
-        }
-      }
-      authenticatedRequest.metadata.put(AuthenticatedKey, true)
-    } else {
-      authenticatedRequest = request
-      authenticatedRequest.metadata.put(AuthenticatedKey, false)
+      request.headers.append('Authorization', `${type} ${value}`)
     }
-    return await execute(authenticatedRequest)
+    request.metadata.put(AuthenticatedKey, !!authorization)
+    return await execute(request)
   }
 }

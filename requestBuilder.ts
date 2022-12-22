@@ -7,7 +7,7 @@ import { BodyEncoder } from './codec.js'
 
 export type QueryParamPrimitiveValue = string | number | boolean | undefined | null
 export type QueryParamValue = QueryParamPrimitiveValue | Array<QueryParamPrimitiveValue>
-export type QueryParams = URLSearchParams | { [name: string]: QueryParamValue }
+export type QueryParams = URLSearchParams | Array<[string, QueryParamPrimitiveValue]> | { [name: string]: QueryParamValue }
 
 export interface UrlBuilder {
   from(url: URL | string): void
@@ -75,16 +75,20 @@ class SimpleUrlBuilder implements UrlBuilder {
 
   addQueryParams(params: QueryParams): void {
     if (params instanceof URLSearchParams) {
-      for (let [name, value] of params.entries()) {
+      for (const [name, value] of params.entries()) {
         this.addQueryParam(name, value)
       }
+    } else if (Array.isArray(params)) {
+      for (const [name, value] of params) {
+        this.addQueryParam(name, `${value}`)
+      }
     } else {
-      for (let [name, value] of Object.entries(params)) {
+      for (const [name, value] of Object.entries(params)) {
         if (value === null || value === undefined) {
           continue
         }
         if (Array.isArray(value)) {
-          for (let entry of value) {
+          for (const entry of value) {
             if (entry === null || entry === undefined) {
               continue
             }

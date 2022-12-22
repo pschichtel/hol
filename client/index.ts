@@ -1,5 +1,6 @@
 import {
   buildRequest,
+  QueryParams,
   RequestBuilder,
   SimpleRequestBuilder,
 } from '../requestBuilder.js'
@@ -47,14 +48,12 @@ export class Client {
 
   private simpleExecuteWithoutBody(method: 'GET' | 'DELETE' | 'OPTIONS' | 'HEAD',
                                    target: URL | string,
-                                   queryParams?: ReadonlyArray<[string, string]>) {
+                                   queryParams?: QueryParams) {
     const request = this.buildRequest(req => {
       req.buildUrl(url => {
         url.from(target)
         if (queryParams) {
-          for (let [name, value] of queryParams) {
-            url.addQueryParam(name, value)
-          }
+          url.addQueryParams(queryParams)
         }
       })
       req.method(method)
@@ -62,19 +61,19 @@ export class Client {
     return this.execute(request)
   }
 
-  get(target: URL | string, queryParams?: ReadonlyArray<[string, string]>): Promise<HolResponse> {
+  get(target: URL | string, queryParams?: QueryParams): Promise<HolResponse> {
     return this.simpleExecuteWithoutBody('GET', target, queryParams)
   }
 
-  delete(target: URL | string, queryParams?: ReadonlyArray<[string, string]>): Promise<HolResponse> {
+  delete(target: URL | string, queryParams?: QueryParams): Promise<HolResponse> {
     return this.simpleExecuteWithoutBody('DELETE', target, queryParams)
   }
 
-  options(target: URL | string, queryParams?: ReadonlyArray<[string, string]>): Promise<HolResponse> {
+  options(target: URL | string, queryParams?: QueryParams): Promise<HolResponse> {
     return this.simpleExecuteWithoutBody('OPTIONS', target, queryParams)
   }
 
-  head(target: URL | string, queryParams?: ReadonlyArray<[string, string]>): Promise<HolResponse> {
+  head(target: URL | string, queryParams?: QueryParams): Promise<HolResponse> {
     return this.simpleExecuteWithoutBody('HEAD', target, queryParams)
   }
 

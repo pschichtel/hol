@@ -48,36 +48,43 @@ export class Client {
 
   private simpleExecuteWithoutBody(method: 'GET' | 'DELETE' | 'OPTIONS' | 'HEAD',
                                    target: URL | string,
-                                   queryParams?: QueryParams) {
+                                   queryParams?: QueryParams,
+                                   abortSignal?: AbortSignal) {
     const request = this.buildRequest(req => {
+      req.method(method)
       req.buildUrl(url => {
         url.from(target)
         if (queryParams) {
           url.addQueryParams(queryParams)
         }
       })
-      req.method(method)
+      if (abortSignal) {
+        req.abortOn(abortSignal)
+      }
     })
     return this.execute(request)
   }
 
-  get(target: URL | string, queryParams?: QueryParams): Promise<HolResponse> {
-    return this.simpleExecuteWithoutBody('GET', target, queryParams)
+  get(target: URL | string, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
+    return this.simpleExecuteWithoutBody('GET', target, queryParams, abortSignal)
   }
 
-  delete(target: URL | string, queryParams?: QueryParams): Promise<HolResponse> {
-    return this.simpleExecuteWithoutBody('DELETE', target, queryParams)
+  delete(target: URL | string, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
+    return this.simpleExecuteWithoutBody('DELETE', target, queryParams, abortSignal)
   }
 
-  options(target: URL | string, queryParams?: QueryParams): Promise<HolResponse> {
-    return this.simpleExecuteWithoutBody('OPTIONS', target, queryParams)
+  options(target: URL | string, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
+    return this.simpleExecuteWithoutBody('OPTIONS', target, queryParams, abortSignal)
   }
 
-  head(target: URL | string, queryParams?: QueryParams): Promise<HolResponse> {
-    return this.simpleExecuteWithoutBody('HEAD', target, queryParams)
+  head(target: URL | string, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
+    return this.simpleExecuteWithoutBody('HEAD', target, queryParams, abortSignal)
   }
 
-  private simpleExecuteWithBody(method: 'POST' | 'PUT' | 'PATCH' | 'QUERY', target: URL | string, body?: BodyEncoder) {
+  private simpleExecuteWithBody(method: 'POST' | 'PUT' | 'PATCH' | 'QUERY',
+                                target: URL | string,
+                                body?: BodyEncoder,
+                                abortSignal?: AbortSignal) {
     const request = this.buildRequest(req => {
       req.buildUrl(url => {
         url.from(target)
@@ -86,24 +93,27 @@ export class Client {
       if (body) {
         body(req)
       }
+      if (abortSignal) {
+        req.abortOn(abortSignal)
+      }
     })
     return this.execute(request)
   }
 
-  post(target: URL | string, body?: BodyEncoder): Promise<HolResponse> {
-    return this.simpleExecuteWithBody('POST', target, body)
+  post(target: URL | string, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
+    return this.simpleExecuteWithBody('POST', target, body, abortSignal)
   }
 
-  put(target: URL | string, body?: BodyEncoder): Promise<HolResponse> {
-    return this.simpleExecuteWithBody('PUT', target, body)
+  put(target: URL | string, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
+    return this.simpleExecuteWithBody('PUT', target, body, abortSignal)
   }
 
-  patch(target: URL | string, body?: BodyEncoder): Promise<HolResponse> {
-    return this.simpleExecuteWithBody('PATCH', target, body)
+  patch(target: URL | string, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
+    return this.simpleExecuteWithBody('PATCH', target, body, abortSignal)
   }
 
-  query(target: URL | string, body?: BodyEncoder): Promise<HolResponse> {
-    return this.simpleExecuteWithBody('QUERY', target, body)
+  query(target: URL | string, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
+    return this.simpleExecuteWithBody('QUERY', target, body, abortSignal)
   }
 
   asHol(): Hol {

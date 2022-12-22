@@ -1,8 +1,8 @@
 {
   "name": "@pschichtel/hol",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A wrapper around fetch with infrastructure for request/response interception",
-  "type": "module",
+  "type": "commonjs",
   "keywords": [
     "fetch"
   ],

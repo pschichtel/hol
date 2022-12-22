@@ -3,7 +3,7 @@ import {
   HolFilter,
   HolRequest,
   HolResponse,
-} from './model.js'
+} from './model'
 
 export function delay(millis: number): HolFilter {
   return function DelayFilter(request: HolRequest, execute: Hol): Promise<HolResponse> {

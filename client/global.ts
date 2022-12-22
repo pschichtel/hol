@@ -1,4 +1,4 @@
-import { Client } from './index.js'
-import { hol } from '../index.js'
+import { Client } from './index'
+import { hol } from '../index'
 
 export const client = new Client(hol)

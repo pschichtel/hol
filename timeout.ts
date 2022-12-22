@@ -5,7 +5,7 @@ import {
   HolMetadataKey,
   HolRequest,
   HolResponse,
-} from './model.js'
+} from './model'
 
 export const TimeoutKey = new HolMetadataKey<number>('the maximum request duration in millis')
 export const TimeoutHappenedKey = new HolMetadataKey<boolean>('whether the request timeout out or not')

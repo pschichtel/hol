@@ -1,4 +1,4 @@
-import { BodyDecoder } from './codec.js'
+import { BodyDecoder } from './codec'
 
 export class HolMetadata {
   private readonly metadata = new Map<symbol, any>()

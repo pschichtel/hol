@@ -2,8 +2,8 @@ import {
   HolMetadata,
   HolMetadataKey,
   HolRequest,
-} from './model.js'
-import { BodyEncoder } from './codec.js'
+} from './model'
+import { BodyEncoder } from './codec'
 
 export type QueryParamPrimitiveValue = string | number | boolean | undefined | null
 export type QueryParamValue = QueryParamPrimitiveValue | Array<QueryParamPrimitiveValue>

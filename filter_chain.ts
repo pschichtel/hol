@@ -3,8 +3,8 @@ import {
   HolFilter,
   HolRequest,
   HolResponse,
-} from './model.js'
-import { noop } from './noop.js'
+} from './model'
+import { noop } from './noop'
 
 export function composeFilters(filters: ReadonlyArray<HolFilter>): HolFilter {
   if (filters.length == 0) {

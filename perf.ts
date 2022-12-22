@@ -5,7 +5,7 @@ import {
   HolMetadataKey,
   HolRequest,
   HolResponse,
-} from './model.js'
+} from './model'
 
 export const PerfRequestDurationKey = new HolMetadataKey<number>('request duration')
 

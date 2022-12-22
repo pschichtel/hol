@@ -1,6 +1,6 @@
 import {
   HolResponse,
-} from './model.js'
+} from './model'
 
 export type HolResult = HolResponseResult | HolErrorResult
 

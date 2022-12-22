@@ -2,7 +2,7 @@ import {
   HolFilter,
   HolRequest,
   HolResponse,
-} from './model.js'
+} from './model'
 
 export const consoleLogger = logger({
   before(request: HolRequest) {

@@ -3,17 +3,17 @@ import {
   QueryParams,
   RequestBuilder,
   SimpleRequestBuilder,
-} from '../requestBuilder.js'
+} from '../requestBuilder'
 import {
   Hol,
   HolFilter,
   HolRequest,
   HolResponse,
-} from '../model.js'
+} from '../model'
 import {
   composeHol,
   holToFetch,
-} from '../index.js'
+} from '../index'
 import { BodyEncoder } from '../codec'
 
 export class Client {

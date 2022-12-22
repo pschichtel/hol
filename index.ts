@@ -6,9 +6,9 @@ import {
   HolMetadata,
   HolFilter,
   Hol,
-} from './model.js'
-import { BodyDecoder } from './codec.js'
-import { composeFilters } from './filter_chain.js'
+} from './model'
+import { BodyDecoder } from './codec'
+import { composeFilters } from './filter_chain'
 
 export function composeHol(hol: Hol, filters: ReadonlyArray<HolFilter>): Hol {
   const filter = composeFilters(filters)

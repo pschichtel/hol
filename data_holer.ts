@@ -28,7 +28,8 @@ export class DataHoler {
     }
     const existingPromise = this.pendingPromises[fullKey]
     if (existingPromise !== undefined) {
-      throw existingPromise
+      const [promise] = existingPromise
+      throw promise
     }
 
     this.forget(key, "superseded")

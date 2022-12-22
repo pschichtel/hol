@@ -1,3 +1,5 @@
+export type JsonSerializable = null | boolean | string | number | Array<JsonSerializable> | { [key: string]: JsonSerializable }
+
 /**
  * A data fetcher for use with React-style frameworks.
  */
@@ -14,7 +16,7 @@ export class DataHoler {
    * @param input the inputs into the fetching function, these should be `JSON.stringify` compatible
    * @param f the function doing the actual fetching which will run once per unique pair of key and input
    */
-  hol<I, O>(key: string, input: I, f: (params: I, signal: AbortSignal) => Promise<O>): O {
+  hol<I extends JsonSerializable, O>(key: string, input: I, f: (params: I, signal: AbortSignal) => Promise<O>): O {
     const fullKey = `${key}-${JSON.stringify(input)}`
     const existingValue = this.values[fullKey]
     if (existingValue !== undefined) {

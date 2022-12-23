@@ -30,7 +30,7 @@ export function timeout(millis: number): HolFilter {
     request.init.signal = abort.signal
 
     let timer: number | undefined = undefined
-    timer = setTimeout(() => {
+    timer = window.setTimeout(() => {
       abort.abort(timeoutAbortReason)
       timer = undefined
     }, millis)
@@ -38,13 +38,13 @@ export function timeout(millis: number): HolFilter {
     return execute(request).then(
       (response) => {
         if (timer) {
-          clearTimeout(timer)
+          window.clearTimeout(timer)
         }
         return response
       },
       (error) => {
         if (timer) {
-          clearTimeout(timer)
+          window.clearTimeout(timer)
         }
         const metadata = request.metadata.clone()
         const holError = new HolError(error, metadata)

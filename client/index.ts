@@ -16,6 +16,8 @@ import {
 } from '../index'
 import { BodyEncoder } from '../codec'
 
+export type RequestTarget = URL | string
+
 export class Client {
   private readonly rawHol: Hol
   private composedHol: Hol
@@ -47,7 +49,7 @@ export class Client {
   }
 
   private simpleExecuteWithoutBody(method: 'GET' | 'DELETE' | 'OPTIONS' | 'HEAD',
-                                   target: URL | string,
+                                   target: RequestTarget,
                                    queryParams?: QueryParams,
                                    abortSignal?: AbortSignal) {
     const request = this.buildRequest(req => {
@@ -65,24 +67,24 @@ export class Client {
     return this.execute(request)
   }
 
-  get(target: URL | string, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
+  get(target: RequestTarget, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
     return this.simpleExecuteWithoutBody('GET', target, queryParams, abortSignal)
   }
 
-  delete(target: URL | string, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
+  delete(target: RequestTarget, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
     return this.simpleExecuteWithoutBody('DELETE', target, queryParams, abortSignal)
   }
 
-  options(target: URL | string, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
+  options(target: RequestTarget, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
     return this.simpleExecuteWithoutBody('OPTIONS', target, queryParams, abortSignal)
   }
 
-  head(target: URL | string, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
+  head(target: RequestTarget, queryParams?: QueryParams, abortSignal?: AbortSignal): Promise<HolResponse> {
     return this.simpleExecuteWithoutBody('HEAD', target, queryParams, abortSignal)
   }
 
   private simpleExecuteWithBody(method: 'POST' | 'PUT' | 'PATCH' | 'QUERY',
-                                target: URL | string,
+                                target: RequestTarget,
                                 body?: BodyEncoder,
                                 abortSignal?: AbortSignal) {
     const request = this.buildRequest(req => {
@@ -100,19 +102,19 @@ export class Client {
     return this.execute(request)
   }
 
-  post(target: URL | string, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
+  post(target: RequestTarget, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
     return this.simpleExecuteWithBody('POST', target, body, abortSignal)
   }
 
-  put(target: URL | string, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
+  put(target: RequestTarget, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
     return this.simpleExecuteWithBody('PUT', target, body, abortSignal)
   }
 
-  patch(target: URL | string, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
+  patch(target: RequestTarget, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
     return this.simpleExecuteWithBody('PATCH', target, body, abortSignal)
   }
 
-  query(target: URL | string, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
+  query(target: RequestTarget, body?: BodyEncoder, abortSignal?: AbortSignal): Promise<HolResponse> {
     return this.simpleExecuteWithBody('QUERY', target, body, abortSignal)
   }
 

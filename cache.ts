@@ -19,12 +19,14 @@ export function fetchLookup(f: FetchCacheLookup): CacheLookup {
   }
 }
 
-export async function caching(cache: Cache, request: HolRequest, cacheOptions?: CacheQueryOptions): Promise<HolResponse | undefined> {
-  let response = await cache.match(request.toFetchRequest(), cacheOptions)
-  if (response === undefined) {
-    return undefined
+export function withQueryOptions(cacheOptions?: CacheQueryOptions): CacheLookup {
+  return async function lookup(cache: Cache, request: HolRequest): Promise<undefined | HolResponse> {
+    const response = await cache.match(request.toFetchRequest(), cacheOptions)
+    if (response === undefined) {
+      return undefined
+    }
+    return fetchToHolRequest(response, request.metadata.clone())
   }
-  return fetchToHolRequest(response, request.metadata.clone())
 }
 
 function noCaching(): Promise<HolResponse | undefined> {

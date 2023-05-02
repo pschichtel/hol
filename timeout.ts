@@ -10,7 +10,8 @@ import {
 export const TimeoutKey = new HolMetadataKey<number>('the maximum request duration in millis')
 export const TimeoutHappenedKey = new HolMetadataKey<boolean>('whether the request timeout out or not')
 
-export function timeout(millis: number): HolFilter {
+export function timeout(millis: number, globalScope?: WindowOrWorkerGlobalScope): HolFilter {
+  const global = globalScope ?? window
   return function TimeoutFilter(request: HolRequest, execute: Hol): Promise<HolResponse> {
     request.metadata.put(TimeoutKey, millis)
     const abort = new AbortController()
@@ -30,7 +31,7 @@ export function timeout(millis: number): HolFilter {
     request.init.signal = abort.signal
 
     let timer: number | undefined = undefined
-    timer = window.setTimeout(() => {
+    timer = global.setTimeout(() => {
       abort.abort(timeoutAbortReason)
       timer = undefined
     }, millis)
@@ -38,13 +39,13 @@ export function timeout(millis: number): HolFilter {
     return execute(request).then(
       (response) => {
         if (timer) {
-          window.clearTimeout(timer)
+          global.clearTimeout(timer)
         }
         return response
       },
       (error) => {
         if (timer) {
-          window.clearTimeout(timer)
+          global.clearTimeout(timer)
         }
         const metadata = request.metadata.clone()
         const holError = new HolError(error, metadata)

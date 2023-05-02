@@ -136,6 +136,10 @@ export class HolRequest {
       metadata: cloneMetadata ? this.metadata.clone() : this.metadata,
     }
   }
+
+  toFetchRequest(): Request {
+    return new Request(this.input, this.init)
+  }
 }
 
 export type Hol = (request: HolRequest) => Promise<HolResponse>

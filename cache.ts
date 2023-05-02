@@ -11,7 +11,7 @@ export type FetchCacheLookup = (cache: Cache, request: Request) => Promise<Respo
 
 export function fetchLookup(f: FetchCacheLookup): CacheLookup {
   return async function HolLookup(cache: Cache, request: HolRequest): Promise<HolResponse | undefined> {
-    const response = await f(cache, new Request(request.input, request.init))
+    const response = await f(cache, request.toFetchRequest())
     if (response === undefined) {
       return undefined
     }
@@ -20,7 +20,7 @@ export function fetchLookup(f: FetchCacheLookup): CacheLookup {
 }
 
 export async function caching(cache: Cache, request: HolRequest, cacheOptions?: CacheQueryOptions): Promise<HolResponse | undefined> {
-  let response = await cache.match(new Request(request.input, request.init), cacheOptions)
+  let response = await cache.match(request.toFetchRequest(), cacheOptions)
   if (response === undefined) {
     return undefined
   }
@@ -42,7 +42,7 @@ export function cache(cacheName: string, lookup?: CacheLookup): HolFilter {
     }
 
     const response = await execute(request)
-    await cache.put(new Request(request.input, request.init), response.response)
+    await cache.put(request.toFetchRequest(), response.response)
     return response
   }
 }

@@ -15,10 +15,11 @@ export function composeHol(hol: Hol, filters: ReadonlyArray<HolFilter>): Hol {
   return (req) => filter(req, hol)
 }
 
-export function hol(request: HolRequest): Promise<HolResponse> {
-  return fetch(request.input, request.init).then(response => ({
+export function fetchToHolRequest(response: Response, metadata?: HolMetadata): HolResponse {
+  let responseMetadata = metadata ?? new HolMetadata()
+  return {
     response: response,
-    metadata: request.metadata,
+    metadata: responseMetadata,
     get statusCode(): number {
       return response.status
     },
@@ -35,10 +36,15 @@ export function hol(request: HolRequest): Promise<HolResponse> {
       return response.headers
     },
     body<T>(decoder: BodyDecoder<T>): Promise<T> {
-      return decoder(response, request.metadata)
+      return decoder(response, responseMetadata)
     }
-  }), error => {
-    throw new HolError(error, request.metadata.clone())
+  }
+}
+
+export function hol(request: HolRequest): Promise<HolResponse> {
+  const clonedMetadata = request.metadata.clone()
+  return fetch(request.input, request.init).then(response => fetchToHolRequest(response, clonedMetadata), error => {
+    throw new HolError(error, clonedMetadata)
   })
 }
 

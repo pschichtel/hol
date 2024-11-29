@@ -2,3 +2,4 @@
 example/
 .editorconfig
 tsconfig.json
+renovate.json

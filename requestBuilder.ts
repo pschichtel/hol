@@ -27,7 +27,7 @@ export interface UrlBuilder {
   fragment(fragment: string | undefined): void
 }
 
-class SimpleUrlBuilder implements UrlBuilder {
+export class SimpleUrlBuilder implements UrlBuilder {
   private url: URL
   private hasHost: boolean = false
 
@@ -227,6 +227,22 @@ export class SimpleRequestBuilder implements RequestBuilder {
 
 export function buildRequest(block: (builder: RequestBuilder) => void): HolRequest {
   const builder = new SimpleRequestBuilder()
+
+  block(builder)
+
+  return builder.build()
+}
+
+export function buildUrl(block: (builder: UrlBuilder) => void): URL {
+  const builder = new SimpleUrlBuilder()
+
+  block(builder)
+
+  return builder.build()
+}
+
+export function buildUrlFrom(from: URL, block: (builder: UrlBuilder) => void): URL {
+  const builder = new SimpleUrlBuilder(from)
 
   block(builder)
 

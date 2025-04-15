@@ -241,7 +241,7 @@ export function buildUrl(block: (builder: UrlBuilder) => void): URL {
   return builder.build()
 }
 
-export function buildUrlFrom(from: URL, block: (builder: UrlBuilder) => void): URL {
+export function buildUrlFrom(from: URL | string, block: (builder: UrlBuilder) => void): URL {
   const builder = new SimpleUrlBuilder(from)
 
   block(builder)

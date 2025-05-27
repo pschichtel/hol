@@ -1,109 +1,182 @@
 export type JsonSerializable = null | boolean | string | number | Array<JsonSerializable> | { [key: string]: JsonSerializable }
 
-/**
- * A data fetcher for use with React-style frameworks.
- */
-export class DataHoler {
-  private readonly keyMapping: { [key: string]: string } = {}
-  private readonly values: { [key: string]: any } = {}
-  private readonly errors: { [key: string]: any } = {}
-  private readonly pendingPromises: { [key: string]: [Promise<any>, AbortController] } = {}
+export type AsyncHoler<I extends JsonSerializable, O> = (params: I, signal: AbortSignal) => Promise<O>
 
-  private makeFullKey(key: string, input: JsonSerializable) {
-    return `${key}-${JSON.stringify(input)}`
+export function transformUnary<T extends (...args: any) => any>(f: T): (params: Parameters<T>) => ReturnType<T> {
+  return (params: Parameters<T>): ReturnType<T> => {
+    return f.apply(null, params)
+  }
+}
+
+type State<O> = PendingValue<O> | AvailableValue<O> | ErrorValue
+
+interface PendingValue<O> {
+  type: "pending"
+  promise: Promise<O>
+  abortController: AbortController
+}
+
+interface AvailableValue<O> {
+  type: "available"
+  value: O
+}
+
+interface ErrorValue {
+  type: "error"
+  error: unknown
+}
+
+/**
+ * Internal use only, not stable API
+ */
+class InternalDataHoler<I extends JsonSerializable, O> {
+  private readonly values: { [key: string]: State<O> } = {}
+  private readonly holer: AsyncHoler<I, O>
+
+  /**
+   * Constructs a new instance using an async operation.
+   *
+   * @param holer an asynchronous operation
+   */
+  constructor(holer: AsyncHoler<I, O>) {
+    if (typeof holer !== "function") {
+      throw new Error("holer must be a function")
+    }
+    this.holer = holer
   }
 
-  private holIt<I extends JsonSerializable, O>(key: string, fullKey: string, input: I, f: (params: I, signal: AbortSignal) => Promise<O>): Promise<O> {
-    this.forget(key, "superseded")
-    this.keyMapping[key] = fullKey
+  key(input: I): string {
+    return JSON.stringify(input)
+  }
+
+  private holIt(key: string, input: I): Promise<O> {
     const abortController = new AbortController()
-    const promise = f(input, abortController.signal).then((value) => {
-      delete this.pendingPromises[fullKey]
-      this.values[fullKey] = value
+    const promise = this.holer(input, abortController.signal).then((value) => {
+      this.values[key] = {
+        type: "available",
+        value,
+      }
       return value;
     }, (error) => {
-      delete this.pendingPromises[fullKey]
-      this.errors[fullKey] = error
+      this.values[key] = {
+        type: "error",
+        error,
+      }
       throw error
     })
-    this.pendingPromises[fullKey] = [promise, abortController]
+    this.values[key] = {
+      type: "pending",
+      promise,
+      abortController,
+    }
     return promise
   }
 
-  /**
-   * Pre-fetches data asynchronously and provides a promise for it.
-   *
-   * @param key a key identifying the kind of request uniquely
-   * @param input the inputs into the fetching function, these should be `JSON.stringify` compatible
-   * @param f the function doing the actual fetching which will run once per unique pair of key and input
-   * @return a Promise for the value
-   */
-  preHol<I extends JsonSerializable, O>(key: string, input: I, f: (params: I, signal: AbortSignal) => Promise<O>): Promise<O> {
-    const fullKey = this.makeFullKey(key, input)
-    const existingValue = this.values[fullKey]
-    if (existingValue !== undefined) {
-      return Promise.resolve(existingValue)
+  preHolWithKey(key: string, input: I): Promise<O> {
+    const state = this.values[key]
+    if (state === undefined) {
+      throw this.holIt(key, input)
     }
-    const existingError = this.errors[fullKey]
-    if (existingError !== undefined) {
-      return Promise.reject(existingError)
+    switch (state.type) {
+      case "available":
+        return Promise.resolve(state.value)
+      case "error":
+        return Promise.reject<O>(state.error)
+      case "pending":
+        return state.promise
     }
-    const existingPromise = this.pendingPromises[fullKey]
-    if (existingPromise !== undefined) {
-      const [promise] = existingPromise
-      return promise as Promise<O>
-    }
+  }
 
-    return this.holIt(key, fullKey, input, f)
+  holWithKey(key: string, input: I): O {
+    const state = this.values[key]
+    if (state === undefined) {
+      throw this.holIt(key, input)
+    }
+    switch (state.type) {
+      case "available":
+        return state.value
+      case "error":
+        throw state.error
+      case "pending":
+        throw state.promise
+    }
+  }
+
+  forgetWithKey(key: string, reason?: string) {
+    const state = this.values[key]
+    if (state !== undefined) {
+      delete this.values[key]
+      if (state.type === "pending") {
+        state.abortController.abort(reason)
+      }
+    }
+  }
+
+  forgetAll(reason?: string) {
+    for (const key in this.values) {
+      this.forgetWithKey(key, reason)
+    }
+  }
+}
+
+/**
+ * A data fetcher for use with React-style frameworks.
+ */
+export class DataHoler<I extends JsonSerializable, O> {
+  /**
+   * Unstable API, don't use!
+   */
+  readonly internal: InternalDataHoler<I, O>
+
+  /**
+   * Constructs a new instance using an async operation.
+   *
+   * @param holer an asynchronous operation
+   */
+  constructor(holer: AsyncHoler<I, O>) {
+    this.internal = new InternalDataHoler(holer)
   }
 
   /**
    * Fetches data asynchronously.
    *
-   * @param key a key identifying the kind of request uniquely
    * @param input the inputs into the fetching function, these should be `JSON.stringify` compatible
-   * @param f the function doing the actual fetching which will run once per unique pair of key and input
    * @return the value once it is available
    * @throws either a Promise while it is still pending or the value the Promise was rejected with
    */
-  hol<I extends JsonSerializable, O>(key: string, input: I, f: (params: I, signal: AbortSignal) => Promise<O>): O {
-    const fullKey = this.makeFullKey(key, input)
-    const existingValue = this.values[fullKey]
-    if (existingValue !== undefined) {
-      return existingValue
-    }
-    const existingError = this.errors[fullKey]
-    if (existingError !== undefined) {
-      throw existingError
-    }
-    const existingPromise = this.pendingPromises[fullKey]
-    if (existingPromise !== undefined) {
-      const [promise] = existingPromise
-      throw promise
-    }
+  hol(input: I): O {
+    const key = this.internal.key(input)
+    return this.internal.holWithKey(key, input)
+  }
 
-    throw this.holIt(key, fullKey, input, f)
+  /**
+   * Pre-fetches data asynchronously and provides a promise for it.
+   *
+   * @param input the inputs into the fetching function, these should be `JSON.stringify` compatible
+   * @return a Promise for the value
+   */
+  preHol(input: I): Promise<O> {
+    const key = this.internal.key(input)
+    return this.internal.preHolWithKey(key, input)
   }
 
   /**
    * Forgets cached data for a given key.
    *
-   * @param key a key identifying the kind of request uniquely
+   * @param input a key identifying the kind of request uniquely
    * @param reason the reason for the removal, this will be used as the abortion reason
    */
-  forget(key: string, reason?: string) {
-    const mappedKey = this.keyMapping[key]
-    if (mappedKey !== undefined) {
-      delete this.keyMapping[key]
-      const pendingPromise = this.pendingPromises[mappedKey]
-      if (pendingPromise !== undefined) {
-        const [, abortController] = pendingPromise
-        abortController.abort(`request was forgotten: ${reason}`)
-        delete this.pendingPromises[mappedKey]
-      }
-      delete this.errors[mappedKey]
-      delete this.values[mappedKey]
-      delete this.values[mappedKey]
-    }
+  forget(input: I, reason?: string) {
+    const key = this.internal.key(input)
+    this.internal.forgetWithKey(key, reason)
+  }
+
+  /**
+   * Forgets all cached data.
+   *
+   * @param reason the reason for the removal, this will be used as the abortion reason
+   */
+  forgetAll(reason?: string) {
+    this.internal.forgetAll(reason)
   }
 }

@@ -1,5 +1,11 @@
 .idea/
 example/
+.github/
+.run/
+.npmignore
+.gitignore
 .editorconfig
 tsconfig.json
 renovate.json
+jest.config.js
+*.test.ts

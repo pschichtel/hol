@@ -1,26 +1,26 @@
 {
-  "name": "@pschichtel/hol-example",
-  "version": "1.0",
-  "description": "A wrapper around fetch with infrastructure for request/response interception",
-  "keywords": [
-    "fetch"
-  ],
-  "license": "MIT",
-  "author": "Phillip Schichtel",
-  "main": "index.ts",
-  "homepage": "https://github.com/pschichtel/hol",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pschichtel/hol"
-  },
-  "scripts": {
-    "build": "tsc",
-    "watch": "webpack -w"
-  },
-  "devDependencies": {
-    "typescript": "5.8.3",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^6.0.0",
-    "ts-loader": "^9.4.2"
-  }
+    "name": "@pschichtel/hol-example",
+    "version": "1.0",
+    "description": "A wrapper around fetch with infrastructure for request/response interception",
+    "keywords": [
+        "fetch"
+    ],
+    "license": "MIT",
+    "author": "Phillip Schichtel",
+    "main": "index.ts",
+    "homepage": "https://github.com/pschichtel/hol",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pschichtel/hol"
+    },
+    "scripts": {
+        "build": "tsc",
+        "watch": "webpack -w"
+    },
+    "devDependencies": {
+        "typescript": "5.8.3",
+        "webpack": "^5.75.0",
+        "webpack-cli": "^6.0.0",
+        "ts-loader": "^9.4.2"
+    }
 }

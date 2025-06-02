@@ -1,4 +1,3 @@
-
 export function isAbortion(value: any): boolean {
-  return value.name === 'AbortError';
+    return value.name === "AbortError"
 }

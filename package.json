@@ -1,33 +1,36 @@
 {
-  "name": "@pschichtel/hol",
-  "version": "0.6.2",
-  "description": "A wrapper around fetch with infrastructure for request/response interception",
-  "type": "commonjs",
-  "keywords": [
-    "fetch"
-  ],
-  "license": "MIT",
-  "author": "Phillip Schichtel",
-  "main": "index.js",
-  "types": "index.d.ts",
-  "homepage": "https://github.com/pschichtel/hol",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pschichtel/hol"
-  },
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "test": "jest"
-  },
-  "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@types/react": "=17.0.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.3.4",
-    "typescript": "5.8.3"
-  },
-  "peerDependencies": {
-    "react": ">= 17.0.0"
-  }
+    "name": "@pschichtel/hol",
+    "version": "0.6.2",
+    "description": "A wrapper around fetch with infrastructure for request/response interception",
+    "type": "commonjs",
+    "keywords": [
+        "fetch"
+    ],
+    "license": "MIT",
+    "author": "Phillip Schichtel",
+    "main": "index.js",
+    "types": "index.d.ts",
+    "homepage": "https://github.com/pschichtel/hol",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pschichtel/hol"
+    },
+    "scripts": {
+        "build": "tsc",
+        "build:watch": "tsc -w",
+        "test": "jest",
+        "format:fix": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.14",
+        "@types/react": "=17.0.0",
+        "jest": "^29.7.0",
+        "prettier": "^3.5.3",
+        "ts-jest": "^29.3.4",
+        "typescript": "5.8.3"
+    },
+    "peerDependencies": {
+        "react": ">= 17.0.0"
+    }
 }

@@ -1,5 +1,4 @@
-hol
-===
+# hol
 
 The library is named after the german word for `fetch` as it internally uses `fetch` and exposes its data
 structures as part of its interface.

@@ -1,27 +1,27 @@
 export interface JsonEncodable {
-  toJson(): string
+    toJson(): string
 }
 
 /**
  * This class can be used to JSON-encode foreign values.
  */
 export class Jsonify<T> implements JsonEncodable {
-  readonly value: T
-  readonly encoder: (value: T) => string
+    readonly value: T
+    readonly encoder: (value: T) => string
 
-  constructor(value: T, encoder: (value: T) => string) {
-    this.value = value
-    this.encoder = encoder
-  }
+    constructor(value: T, encoder: (value: T) => string) {
+        this.value = value
+        this.encoder = encoder
+    }
 
-  toString(): string {
-    // this coerces the values into a string, whether there is a toString or not.
-    return `${this.value}`
-  }
+    toString(): string {
+        // this coerces the values into a string, whether there is a toString or not.
+        return `${this.value}`
+    }
 
-  toJson(): string {
-    return this.encoder(this.value);
-  }
+    toJson(): string {
+        return this.encoder(this.value)
+    }
 }
 
 /**
@@ -39,10 +39,7 @@ export type JsonValue =
     | ReadonlyArray<JsonValue>
     | { [key: string]: JsonValue }
 
-export type AsyncHoler<I extends JsonValue, O> = (
-    params: I,
-    signal: AbortSignal,
-) => Promise<O>
+export type AsyncHoler<I extends JsonValue, O> = (params: I, signal: AbortSignal) => Promise<O>
 
 export function transformUnary<T extends (...args: any) => any>(
     f: T,

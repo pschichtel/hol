@@ -30,22 +30,20 @@ export class Jsonify<T> implements JsonEncodable {
  * immediately calling toJSON again.
  */
 export type NativeJsonValue =
-  | null
-  | boolean
-  | Boolean
-  | string
-  | String
-  | number
-  | Number
-  | ReadonlyArray<JsonValue>
-  | { [key: string]: JsonValue }
+    | null
+    | boolean
+    | Boolean
+    | string
+    | String
+    | number
+    | Number
+    | ReadonlyArray<JsonValue>
+    | { [key: string]: JsonValue }
 
 /**
  * This type represents all values that produce useful and predictable results with `JSON.stringify()`.
  */
-export type JsonValue =
-    | NativeJsonValue
-    | JsonEncodable
+export type JsonValue = NativeJsonValue | JsonEncodable
 
 export type AsyncHoler<I extends JsonValue, O> = (params: I, signal: AbortSignal) => Promise<O>
 

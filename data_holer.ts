@@ -73,6 +73,18 @@ interface ErrorValue {
     error: unknown
 }
 
+export type Result<T> = SuccessResult<T> | ErrorResult
+
+export interface ErrorResult {
+    type: "error"
+    error: unknown
+}
+
+export interface SuccessResult<T> {
+    type: "success"
+    value: T
+}
+
 /**
  * Internal use only, not stable API
  */
@@ -204,6 +216,30 @@ export class DataHoler<I extends JsonValue, O> {
     hol(input: I): O {
         const key = this.internal.key(input)
         return this.internal.holWithKey(key, input)
+    }
+
+    /**
+     * Fetches data asynchronously. This variant does not throw errors, but instead returns
+     * a `Result<O>`.
+     *
+     * @param input the inputs into the fetching function
+     * @return the value once it is available
+     * @throws either a Promise while it is still pending or the value the Promise was rejected with
+     */
+    holResult(input: I): Result<O> {
+        const key = this.internal.key(input)
+        try {
+            return {
+                type: "success",
+                value: this.internal.holWithKey(key, input),
+            }
+        } catch (e) {
+            this.internal.rethrowPromiseWithKey(key, e)
+            return {
+                type: "error",
+                error: e,
+            }
+        }
     }
 
     /**

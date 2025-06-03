@@ -1,10 +1,12 @@
 import { DependencyList, EffectCallback } from "react"
-import { DataHoler, JsonValue } from "../data_holer"
+import { DataHoler, JsonValue, Result } from "../data_holer"
 
-export function dataHolderHook<I extends JsonValue, O>(
+export function internalDataHolderHook<I extends JsonValue, InternalO, O>(
     hook: (effectCallback: EffectCallback, dependencies: DependencyList) => void,
-    dataHoler: DataHoler<I, O>,
+    dataHoler: DataHoler<I, InternalO>,
     input: I,
+    success: (internal: InternalO) => O,
+    error: (e: unknown) => O,
 ): O {
     const key = dataHoler.internal.key(input)
     try {
@@ -14,10 +16,46 @@ export function dataHolderHook<I extends JsonValue, O>(
                 dataHoler.internal.forgetWithKey(key, "unmount")
             }
         }, [key, dataHoler])
-        return output
+        return success(output)
     } catch (e) {
         dataHoler.internal.rethrowPromiseWithKey(key, e)
         dataHoler.internal.forgetWithKey(key, "error")
-        throw e
+        return error(e)
     }
+}
+
+export function dataHolderHook<I extends JsonValue, O>(
+    hook: (effectCallback: EffectCallback, dependencies: DependencyList) => void,
+    dataHoler: DataHoler<I, O>,
+    input: I,
+): O {
+    return internalDataHolderHook<I, O, O>(
+        hook,
+        dataHoler,
+        input,
+        o => o,
+        e => {
+            throw e
+        },
+    )
+}
+
+export function dataHolderHookResult<I extends JsonValue, O>(
+    hook: (effectCallback: EffectCallback, dependencies: DependencyList) => void,
+    dataHoler: DataHoler<I, O>,
+    input: I,
+): Result<O> {
+    return internalDataHolderHook<I, O, Result<O>>(
+        hook,
+        dataHoler,
+        input,
+        o => ({
+            type: "success",
+            value: o,
+        }),
+        e => ({
+            type: "error",
+            error: e,
+        }),
+    )
 }

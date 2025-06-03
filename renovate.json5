@@ -1,3 +1,7 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json"
+    $schema: "https://docs.renovatebot.com/renovate-schema.json",
+    ignoreDeps: [
+        // don't update the react types, the version is the minimum version supported!
+        "@types/react",
+    ]
 }

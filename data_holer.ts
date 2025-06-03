@@ -4,6 +4,7 @@ export type JsonSerializable =
     | string
     | number
     | Array<JsonSerializable>
+    | ReadonlyArray<JsonSerializable>
     | { [key: string]: JsonSerializable }
 
 export type AsyncHoler<I extends JsonSerializable, O> = (

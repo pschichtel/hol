@@ -8,5 +8,6 @@
         "skipLibCheck": true,
         "declaration": true,
         "sourceMap": true
-    }
+    },
+    "exclude": ["**/*.test.ts"]
 }

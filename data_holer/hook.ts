@@ -1,7 +1,7 @@
 import { DependencyList, EffectCallback } from "react"
-import { DataHoler, JsonSerializable } from "../data_holer"
+import { DataHoler, JsonValue } from "../data_holer"
 
-export function dataHolderHook<I extends JsonSerializable, O>(
+export function dataHolderHook<I extends JsonValue, O>(
     hook: (effectCallback: EffectCallback, dependencies: DependencyList) => void,
     dataHoler: DataHoler<I, O>,
     input: I,

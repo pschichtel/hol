@@ -1,13 +1,45 @@
-export type JsonSerializable =
+export interface JsonEncodable {
+  toJson(): string
+}
+
+/**
+ * This class can be used to JSON-encode foreign values.
+ */
+export class Jsonify<T> implements JsonEncodable {
+  readonly value: T
+  readonly encoder: (value: T) => string
+
+  constructor(value: T, encoder: (value: T) => string) {
+    this.value = value
+    this.encoder = encoder
+  }
+
+  toString(): string {
+    // this coerces the values into a string, whether there is a toString or not.
+    return `${this.value}`
+  }
+
+  toJson(): string {
+    return this.encoder(this.value);
+  }
+}
+
+/**
+ * This type represents all values that produce useful and predictable results with `JSON.stringify()`.
+ */
+export type JsonValue =
     | null
     | boolean
+    | Boolean
     | string
+    | String
     | number
-    | Array<JsonSerializable>
-    | ReadonlyArray<JsonSerializable>
-    | { [key: string]: JsonSerializable }
+    | Number
+    | JsonEncodable
+    | ReadonlyArray<JsonValue>
+    | { [key: string]: JsonValue }
 
-export type AsyncHoler<I extends JsonSerializable, O> = (
+export type AsyncHoler<I extends JsonValue, O> = (
     params: I,
     signal: AbortSignal,
 ) => Promise<O>
@@ -41,7 +73,7 @@ interface ErrorValue {
 /**
  * Internal use only, not stable API
  */
-class InternalDataHoler<I extends JsonSerializable, O> {
+class InternalDataHoler<I extends JsonValue, O> {
     private readonly values: { [key: string]: State<O> } = {}
     private readonly holer: AsyncHoler<I, O>
 
@@ -137,7 +169,7 @@ class InternalDataHoler<I extends JsonSerializable, O> {
 /**
  * A data fetcher for use with React-style frameworks.
  */
-export class DataHoler<I extends JsonSerializable, O> {
+export class DataHoler<I extends JsonValue, O> {
     /**
      * Unstable API, don't use!
      */

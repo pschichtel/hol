@@ -1,5 +1,5 @@
 export interface JsonEncodable {
-    toJson(): string
+    toJSON(): NativeJsonValue
 }
 
 /**
@@ -7,9 +7,9 @@ export interface JsonEncodable {
  */
 export class Jsonify<T> implements JsonEncodable {
     readonly value: T
-    readonly encoder: (value: T) => string
+    readonly encoder: (value: T) => NativeJsonValue
 
-    constructor(value: T, encoder: (value: T) => string) {
+    constructor(value: T, encoder: (value: T) => NativeJsonValue) {
         this.value = value
         this.encoder = encoder
     }
@@ -19,25 +19,33 @@ export class Jsonify<T> implements JsonEncodable {
         return `${this.value}`
     }
 
-    toJson(): string {
+    toJSON(): NativeJsonValue {
         return this.encoder(this.value)
     }
 }
 
 /**
+ * This type represents all values that produce useful and predictable results with `JSON.stringify()` without the use
+ * of a toJSON method. This type is returned by toJSON, because it does not support values that themselves require
+ * immediately calling toJSON again.
+ */
+export type NativeJsonValue =
+  | null
+  | boolean
+  | Boolean
+  | string
+  | String
+  | number
+  | Number
+  | ReadonlyArray<JsonValue>
+  | { [key: string]: JsonValue }
+
+/**
  * This type represents all values that produce useful and predictable results with `JSON.stringify()`.
  */
 export type JsonValue =
-    | null
-    | boolean
-    | Boolean
-    | string
-    | String
-    | number
-    | Number
+    | NativeJsonValue
     | JsonEncodable
-    | ReadonlyArray<JsonValue>
-    | { [key: string]: JsonValue }
 
 export type AsyncHoler<I extends JsonValue, O> = (params: I, signal: AbortSignal) => Promise<O>
 

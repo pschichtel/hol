@@ -16,6 +16,7 @@ export function dataHolderHook<I extends JsonValue, O>(
         }, [key, dataHoler])
         return output
     } catch (e) {
+        dataHoler.internal.rethrowPromiseWithKey(key, e)
         dataHoler.internal.forgetWithKey(key, "error")
         throw e
     }

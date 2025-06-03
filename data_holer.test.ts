@@ -10,7 +10,7 @@ function testPromise<T>(): [Promise<T>, (value: T) => void, (error: any) => void
     return [promise, v => resolveF!(v), e => rejectF!(e)]
 }
 
-test("bla", () => {
+test("promise is thrown and completes", () => {
     const [promise, resolve] = testPromise<string>()
 
     const holer = new DataHoler<string, string>(() => promise)
@@ -28,4 +28,43 @@ test("bla", () => {
     })
 
     resolve("test")
+})
+
+test("promise can be rethrown", () => {
+    const [promise] = testPromise<string>()
+
+    const holer = new DataHoler<string, string>(() => promise)
+
+    try {
+        try {
+            holer.hol("a")
+        } catch (e) {
+            holer.rethrowPromise("a", e)
+            fail("the promise was not rethrown")
+        }
+    } catch (e) {
+        expect(e).toStrictEqual(promise)
+    }
+})
+
+test("other error is not rethrown", () => {
+    const [promise, , reject] = testPromise<string>()
+
+    const holer = new DataHoler<string, string>(() => promise)
+
+    let error = new Error("some error")
+    holer.preHol("a").then(undefined, () => {
+        try {
+            try {
+                holer.hol("a")
+            } catch (e) {
+                holer.rethrowPromise("a", e)
+                expect(e).toStrictEqual(error)
+            }
+        } catch (e) {
+            fail("the error should not have been rethrown")
+        }
+    })
+
+    reject(error)
 })

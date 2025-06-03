@@ -125,7 +125,7 @@ class InternalDataHoler<I extends JsonValue, O> {
     preHolWithKey(key: string, input: I): Promise<O> {
         const state = this.values[key]
         if (state === undefined) {
-            throw this.holIt(key, input)
+            return this.holIt(key, input)
         }
         switch (state.type) {
             case "available":
@@ -152,7 +152,7 @@ class InternalDataHoler<I extends JsonValue, O> {
         }
     }
 
-    forgetWithKey(key: string, reason?: string) {
+    forgetWithKey(key: string, reason?: string): void {
         const state = this.values[key]
         if (state !== undefined) {
             delete this.values[key]
@@ -162,9 +162,16 @@ class InternalDataHoler<I extends JsonValue, O> {
         }
     }
 
-    forgetAll(reason?: string) {
+    forgetAll(reason?: string): void {
         for (const key in this.values) {
             this.forgetWithKey(key, reason)
+        }
+    }
+
+    rethrowPromiseWithKey(key: string, throwable: unknown): void {
+        const state = this.values[key]
+        if (state.type === "pending" && state.promise === throwable) {
+            throw throwable
         }
     }
 }
@@ -190,7 +197,7 @@ export class DataHoler<I extends JsonValue, O> {
     /**
      * Fetches data asynchronously.
      *
-     * @param input the inputs into the fetching function, these should be `JSON.stringify` compatible
+     * @param input the inputs into the fetching function
      * @return the value once it is available
      * @throws either a Promise while it is still pending or the value the Promise was rejected with
      */
@@ -202,7 +209,7 @@ export class DataHoler<I extends JsonValue, O> {
     /**
      * Pre-fetches data asynchronously and provides a promise for it.
      *
-     * @param input the inputs into the fetching function, these should be `JSON.stringify` compatible
+     * @param input the inputs into the fetching function
      * @return a Promise for the value
      */
     preHol(input: I): Promise<O> {
@@ -213,10 +220,10 @@ export class DataHoler<I extends JsonValue, O> {
     /**
      * Forgets cached data for a given key.
      *
-     * @param input a key identifying the kind of request uniquely
+     * @param input the inputs into the fetching function
      * @param reason the reason for the removal, this will be used as the abortion reason
      */
-    forget(input: I, reason?: string) {
+    forget(input: I, reason?: string): void {
         const key = this.internal.key(input)
         this.internal.forgetWithKey(key, reason)
     }
@@ -226,7 +233,18 @@ export class DataHoler<I extends JsonValue, O> {
      *
      * @param reason the reason for the removal, this will be used as the abortion reason
      */
-    forgetAll(reason?: string) {
+    forgetAll(reason?: string): void {
         this.internal.forgetAll(reason)
+    }
+
+    /**
+     * This function allows rethrowing the promise matching the input to simplify error handling
+     *
+     * @param input the inputs into the fetching function
+     * @param throwable the thrown value
+     */
+    rethrowPromise(input: I, throwable: unknown): void {
+        const key = this.internal.key(input)
+        this.internal.rethrowPromiseWithKey(key, throwable)
     }
 }

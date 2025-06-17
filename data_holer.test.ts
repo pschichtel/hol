@@ -68,3 +68,40 @@ test("other error is not rethrown", () => {
 
     reject(error)
 })
+
+test("testing forget", async () => {
+    let [promise, resolve] = testPromise<string>()
+    const holer = new DataHoler<string, string>(() => promise)
+    const input = "cacheKey"
+
+    let firstPromise: Promise<string> | undefined = undefined
+
+    try {
+        holer.hol(input)
+    } catch (e) {
+        expect(e).toStrictEqual(promise)
+        firstPromise = e as Promise<string>
+    }
+
+    resolve("cached data")
+
+    await firstPromise!
+
+    expect(holer.hol(input)).toBe("cached data")
+
+    holer.forget(input)
+
+    let secondPromise: Promise<string> | undefined
+    ;[promise, resolve] = testPromise<string>()
+    try {
+        holer.hol(input)
+    } catch (e) {
+        expect(e).toStrictEqual(promise)
+        secondPromise = e as Promise<string>
+    }
+    resolve("new data")
+
+    await secondPromise!
+
+    expect(holer.hol(input)).toBe("new data")
+})

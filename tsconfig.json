@@ -7,7 +7,7 @@
         "strict": true,
         "skipLibCheck": true,
         "declaration": true,
-        "sourceMap": true
-    },
-    "exclude": ["**/*.test.ts"]
+        "sourceMap": true,
+        "types": ["jest"]
+    }
 }

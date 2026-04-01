@@ -27,7 +27,7 @@
         "@types/react": "=17.0.0",
         "jest": "30.3.0",
         "prettier": "3.8.1",
-        "ts-jest": "29.4.6",
+        "ts-jest": "29.4.9",
         "typescript": "6.0.2"
     },
     "peerDependencies": {

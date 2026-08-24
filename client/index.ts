@@ -38,11 +38,12 @@ export class Client {
         return this.execute(buildRequest(build), adhocFilters)
     }
 
-    private simpleExecuteWithoutBody(
-        method: "GET" | "DELETE" | "OPTIONS" | "HEAD",
+    private simpleExecute(
+        method: string,
         target: RequestTarget,
-        queryParams?: QueryParams,
-        abortSignal?: AbortSignal,
+        queryParams: QueryParams | undefined,
+        body: BodyEncoder | undefined,
+        abortSignal: AbortSignal | undefined,
     ) {
         const request = this.buildRequest(req => {
             req.method(method)
@@ -52,6 +53,9 @@ export class Client {
                     url.addQueryParams(queryParams)
                 }
             })
+            if (body) {
+                body(req)
+            }
             if (abortSignal) {
                 req.abortOn(abortSignal)
             }
@@ -64,15 +68,16 @@ export class Client {
         queryParams?: QueryParams,
         abortSignal?: AbortSignal,
     ): Promise<HolResponse> {
-        return this.simpleExecuteWithoutBody("GET", target, queryParams, abortSignal)
+        return this.simpleExecute("GET", target, queryParams, undefined, abortSignal)
     }
 
     delete(
         target: RequestTarget,
         queryParams?: QueryParams,
+        body?: BodyEncoder,
         abortSignal?: AbortSignal,
     ): Promise<HolResponse> {
-        return this.simpleExecuteWithoutBody("DELETE", target, queryParams, abortSignal)
+        return this.simpleExecute("DELETE", target, queryParams, body, abortSignal)
     }
 
     options(
@@ -80,7 +85,7 @@ export class Client {
         queryParams?: QueryParams,
         abortSignal?: AbortSignal,
     ): Promise<HolResponse> {
-        return this.simpleExecuteWithoutBody("OPTIONS", target, queryParams, abortSignal)
+        return this.simpleExecute("OPTIONS", target, queryParams, undefined, abortSignal)
     }
 
     head(
@@ -88,60 +93,43 @@ export class Client {
         queryParams?: QueryParams,
         abortSignal?: AbortSignal,
     ): Promise<HolResponse> {
-        return this.simpleExecuteWithoutBody("HEAD", target, queryParams, abortSignal)
-    }
-
-    private simpleExecuteWithBody(
-        method: "POST" | "PUT" | "PATCH" | "QUERY",
-        target: RequestTarget,
-        body?: BodyEncoder,
-        abortSignal?: AbortSignal,
-    ) {
-        const request = this.buildRequest(req => {
-            req.buildUrl(url => {
-                url.from(target)
-            })
-            req.method(method)
-            if (body) {
-                body(req)
-            }
-            if (abortSignal) {
-                req.abortOn(abortSignal)
-            }
-        })
-        return this.execute(request)
+        return this.simpleExecute("HEAD", target, queryParams, undefined, abortSignal)
     }
 
     post(
         target: RequestTarget,
+        queryParams?: QueryParams,
         body?: BodyEncoder,
         abortSignal?: AbortSignal,
     ): Promise<HolResponse> {
-        return this.simpleExecuteWithBody("POST", target, body, abortSignal)
+        return this.simpleExecute("POST", target, queryParams, body, abortSignal)
     }
 
     put(
         target: RequestTarget,
+        queryParams?: QueryParams,
         body?: BodyEncoder,
         abortSignal?: AbortSignal,
     ): Promise<HolResponse> {
-        return this.simpleExecuteWithBody("PUT", target, body, abortSignal)
+        return this.simpleExecute("PUT", target, queryParams, body, abortSignal)
     }
 
     patch(
         target: RequestTarget,
+        queryParams?: QueryParams,
         body?: BodyEncoder,
         abortSignal?: AbortSignal,
     ): Promise<HolResponse> {
-        return this.simpleExecuteWithBody("PATCH", target, body, abortSignal)
+        return this.simpleExecute("PATCH", target, queryParams, body, abortSignal)
     }
 
     query(
         target: RequestTarget,
+        queryParams?: QueryParams,
         body?: BodyEncoder,
         abortSignal?: AbortSignal,
     ): Promise<HolResponse> {
-        return this.simpleExecuteWithBody("QUERY", target, body, abortSignal)
+        return this.simpleExecute("QUERY", target, queryParams, body, abortSignal)
     }
 
     asHol(): Hol {

@@ -10,7 +10,7 @@ example/
 .prettierrc.yml
 
 tsconfig.json
-renovate.json
+renovate.json5
 jest.config.js
 
 *.test.ts

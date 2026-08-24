@@ -13,5 +13,5 @@ tsconfig.json
 renovate.json5
 jest.config.js
 
-*.test.ts
+*.test.*
 .swcrc

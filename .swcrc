@@ -1,13 +1,13 @@
 {
-  "jsc": {
-    "parser": {
-      "syntax": "typescript",
-      "tsx": true,
-      "decorators": true
+    "jsc": {
+        "parser": {
+            "syntax": "typescript",
+            "tsx": true,
+            "decorators": true
+        },
+        "target": "es2022"
     },
-    "target": "es2022"
-  },
-  "module": {
-    "type": "commonjs"
-  }
+    "module": {
+        "type": "commonjs"
+    }
 }

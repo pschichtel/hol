@@ -14,3 +14,4 @@ renovate.json
 jest.config.js
 
 *.test.ts
+.swcrc

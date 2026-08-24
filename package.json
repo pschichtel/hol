@@ -16,6 +16,7 @@
         "url": "https://github.com/pschichtel/hol"
     },
     "scripts": {
+        "clean": "find . client data_holer -maxdepth 1 -name '*.js' -o -name '*.js.map' -o -name '*.d.ts' -delete",
         "build": "tsc",
         "build:watch": "tsc -w",
         "test": "jest",
